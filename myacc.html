@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Save Text to File</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            margin-bottom: 10px;
+        }
+        td {
+            padding: 0 5px;
+        }
+        input[type="text"], select, input[type="date"] {
+            font-size: 16px;
+            padding: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Save Text to File</h1>
+    <table>
+        <tbody>
+            <!-- Row Template -->
+            <tr>
+                <td>
+                    <select class="dropdown1">
+                        <option value="FROM" selected>FROM</option>
+                        <option value="Option1">Option 1</option>
+                        <option value="Option2">Option 2</option>
+                        <option value="Option3">Option 3</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="dropdown">
+                        <option value="TO" selected>TO</option>
+                        <option value="CASH">CASH</option>
+                        <option value="HDFC">HDFC</option>
+                        <option value="SBI">SBI</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" class="textInput" maxlength="5" placeholder="Enter text" />
+                </td>
+                <td>
+                    <input type="date" class="datePicker" />
+                </td>
+            </tr>
+            <!-- Repeat Row Template 9 more times -->
+            <!-- Rows generated dynamically using JavaScript -->
+        </tbody>
+    </table>
+    <button onclick="saveFile()">Save to File</button>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const tableBody = document.querySelector("table tbody");
+            for (let i = 1; i < 10; i++) {
+                const newRow = tableBody.rows[0].cloneNode(true);
+                tableBody.appendChild(newRow);
+            }
+
+            // Set current date as default value for all date inputs
+            const today = new Date().toISOString().split("T")[0];
+            document.querySelectorAll(".datePicker").forEach(datePicker => {
+                datePicker.value = today;
+            });
+        });
+
+        function saveFile() {
+            const rows = document.querySelectorAll("tbody tr");
+            let data = "";
+
+            rows.forEach(row => {
+                const from = row.querySelector(".dropdown1").value;
+                const to = row.querySelector(".dropdown").value;
+                const text = row.querySelector(".textInput").value;
+                const date = row.querySelector(".datePicker").value;
+
+                data += `${from}, ${to}, ${text}, ${date}\n`;
+            });
+
+            const now = new Date();
+            const fileName = `${now.getDate().toString().padStart(2, '0')}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getFullYear().toString().slice(-2)}${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}.csv`;
+
+            const blob = new Blob([data], { type: "text/csv" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+
+            a.href = url;
+            a.download = fileName;
+            a.click();
+
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
+
